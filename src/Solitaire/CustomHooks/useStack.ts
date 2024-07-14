@@ -1,12 +1,13 @@
-import { useState } from "react";
-import useCardPile, { UseCardPile } from "./useCardPile";
+import { RefObject, useRef, useState } from "react";
+import useCardPile, { CustomTouch, UseCardPile } from "./useCardPile";
 import { CardType } from "../Components/GameTable";
 
-export type UseStack = UseCardPile & {
-  evaluateDrop: (card: CardType) => boolean;
-  showCard: (card: CardType) => void;
-  cards: CardType[];
-};
+export type UseStack = UseCardPile &
+  CustomTouch & {
+    evaluateDrop: (card: CardType) => boolean;
+    showCard: (card: CardType) => void;
+    cards: CardType[];
+  };
 
 const useStack: (
   name: string,
@@ -21,12 +22,14 @@ const useStack: (
 
   const [cards, setCards] = useState<CardType[]>([...displayCards]);
 
-  const { onMouseEnter, onMouseLeave, addCards, removeCards } = useCardPile(
-    name,
-    isDragging,
-    setHighlightedStack,
-    setCards
-  );
+  const {
+    onMouseEnter,
+    onMouseLeave,
+    addCards,
+    removeCards,
+    ref,
+    onHighlightOnTouch,
+  } = useCardPile(name, isDragging, setHighlightedStack, setCards);
 
   const cardColours: { [key: string]: "black" | "red" } = {
     spades: "black",
@@ -82,6 +85,8 @@ const useStack: (
     removeCards,
     showCard,
     cards,
+    ref,
+    onHighlightOnTouch,
   };
 };
 

@@ -1,11 +1,12 @@
-import { useState } from "react";
-import useCardPile, { UseCardPile } from "./useCardPile";
+import { RefObject, useRef, useState } from "react";
+import useCardPile, { CustomTouch, UseCardPile } from "./useCardPile";
 import { CardType } from "../Components/GameTable";
 
-export type UseHomePile = UseCardPile & {
-  evaluateDrop: (card: CardType) => boolean;
-  cards: CardType[];
-};
+export type UseHomePile = UseCardPile &
+  CustomTouch & {
+    evaluateDrop: (card: CardType) => boolean;
+    cards: CardType[];
+  };
 
 const useHomePile: (
   suit: string,
@@ -14,12 +15,14 @@ const useHomePile: (
 ) => UseHomePile = (suit, isDragging, setHighlightedStack) => {
   const [cards, setCards] = useState<CardType[]>([]);
 
-  const { onMouseEnter, onMouseLeave, addCards, removeCards } = useCardPile(
-    suit,
-    isDragging,
-    setHighlightedStack,
-    setCards
-  );
+  const {
+    onMouseEnter,
+    onMouseLeave,
+    addCards,
+    removeCards,
+    onHighlightOnTouch,
+    ref,
+  } = useCardPile(suit, isDragging, setHighlightedStack, setCards);
 
   const order = [
     "ace",
@@ -57,6 +60,8 @@ const useHomePile: (
     addCards,
     removeCards,
     cards,
+    ref,
+    onHighlightOnTouch,
   };
 };
 

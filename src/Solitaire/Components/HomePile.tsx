@@ -1,6 +1,7 @@
 import Card, { HandleCardDrop } from "./Card";
 import { HandleCardsDrop } from "./GameTable";
 import { UseHomePile } from "../CustomHooks/useHomePile";
+import React from "react";
 
 type Props = {
   name: string;
@@ -8,6 +9,7 @@ type Props = {
   setIsDragging: (isDragging: boolean) => void;
   handleCardsDrop: HandleCardsDrop;
   hook: UseHomePile;
+  onDragTouch: (x: number, y: number) => void;
 };
 
 const HomePile = ({
@@ -16,6 +18,7 @@ const HomePile = ({
   setIsDragging,
   handleCardsDrop,
   hook,
+  onDragTouch,
 }: Props) => {
   const { cards } = hook;
   const handleCardDrop: HandleCardDrop = (card, from) => {
@@ -30,9 +33,11 @@ const HomePile = ({
 
   return (
     <div
-      className={"p-5 md:w-[25%] w-28 h-44 " + getBorderColour()}
+      ref={hook.ref}
+      className={"p-5 md:w-[25%] w-28 " + getBorderColour()}
       onMouseEnter={hook.onMouseEnter}
       onMouseLeave={hook.onMouseLeave}
+      id={name}
     >
       <img
         className="absolute p-1 md:w-[9%] w-[20%]"
@@ -51,6 +56,7 @@ const HomePile = ({
           handleCardDrop={handleCardDrop}
           pile={name}
           showCard
+          onTouch={onDragTouch}
         />
       ))}
     </div>

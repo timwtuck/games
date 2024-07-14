@@ -1,16 +1,15 @@
 import { CardType, HandleCardsDrop } from "./GameTable";
 import { UseStack } from "../CustomHooks/useStack";
 import Card, { HandleCardDrop } from "./Card";
-import Draggable from "react-draggable";
 import { useEffect, useState } from "react";
 
 type Props = {
-  //  cards: CardType[];
   name: string;
   handleCardsDrop: HandleCardsDrop;
   highlightedStack: string | null;
   hook: UseStack;
   setIsDragging: (isDragging: boolean) => void;
+  onDragTouch: (x: number, y: number) => void;
 };
 
 type GroupDrag = { x: number; y: number; z: string | null };
@@ -21,6 +20,7 @@ const Stack = ({
   highlightedStack,
   hook,
   setIsDragging,
+  onDragTouch,
 }: Props) => {
   const { cards } = hook;
   const getBorderColour: () => string = () => {
@@ -58,9 +58,11 @@ const Stack = ({
 
   return (
     <div
+      ref={hook.ref}
       className={"p-5 md:h-full md:w-[14.2%] w-[22%] h-56 " + getBorderColour()}
-      onPointerEnter={hook.onMouseEnter}
-      onPointerLeave={hook.onMouseLeave}
+      onMouseEnter={hook.onMouseEnter}
+      onMouseLeave={hook.onMouseLeave}
+      id={name}
     >
       {cards.map((card, i) => (
         <Card
@@ -75,6 +77,7 @@ const Stack = ({
           showCard={card.show}
           onDragging={onDrag}
           draggingClassName={positions[i]?.z ?? ""}
+          onTouch={onDragTouch}
         />
       ))}
     </div>

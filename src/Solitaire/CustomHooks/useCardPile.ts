@@ -1,11 +1,16 @@
-import { MouseEventHandler, useEffect } from "react";
+import { MouseEventHandler, RefObject, useEffect, useRef } from "react";
 import { CardType } from "../Components/GameTable";
 
 export type UseCardPile = {
-  onMouseEnter: MouseEventHandler;
-  onMouseLeave: MouseEventHandler;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
   addCards: (card: CardType[]) => void;
   removeCards: (card: CardType[]) => void;
+};
+
+export type CustomTouch = {
+  ref: RefObject<HTMLDivElement>;
+  onHighlightOnTouch: (x: number, y: number) => void;
 };
 
 const useCardPile: (
@@ -13,12 +18,24 @@ const useCardPile: (
   isDragging: boolean,
   setHighlightedStack: React.Dispatch<React.SetStateAction<string | null>>,
   setCards: React.Dispatch<React.SetStateAction<CardType[]>>
-) => UseCardPile = (name, isDragging, setHighlightedStack, setCards) => {
-  const onMouseEnter: MouseEventHandler = (e) => {
-    if (isDragging) setHighlightedStack(name);
+) => UseCardPile & CustomTouch = (
+  name,
+  isDragging,
+  setHighlightedStack,
+  setCards
+) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const onMouseEnter: () => void = () => {
+    if (isDragging) {
+      setHighlightedStack(name);
+    }
   };
-  const onMouseLeave: MouseEventHandler = (e) => {
-    setHighlightedStack(null);
+  const onMouseLeave: () => void = () => {
+    setHighlightedStack((curr) => {
+      if (curr === name) return null;
+      return curr;
+    });
   };
 
   const addCards: (cards: CardType[]) => void = (cards) => {
@@ -27,6 +44,17 @@ const useCardPile: (
 
   const removeCards: (cards: CardType[]) => void = (cards) => {
     setCards((curr) => curr.filter((card) => !cards.includes(card)));
+  };
+
+  const onHighlightOnTouch: (x: number, y: number) => void = (x, y) => {
+    if (!ref.current) return;
+
+    const area = ref.current.getBoundingClientRect();
+    if (x > area.left && x < area.right && y > area.top && y < area.bottom) {
+      onMouseEnter();
+    } else {
+      onMouseLeave();
+    }
   };
 
   useEffect(() => {
@@ -40,6 +68,8 @@ const useCardPile: (
     onMouseLeave,
     addCards,
     removeCards,
+    onHighlightOnTouch,
+    ref,
   };
 };
 

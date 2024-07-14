@@ -1,11 +1,12 @@
 import DrawPile from "./DrawPile";
 import Stack from "./Stack";
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import useStack, { UseStack } from "../CustomHooks/useStack";
 import useDrawPile, { UseDrawPile } from "../CustomHooks/useDrawPile";
 import { generateDeck } from "../Utils/GenerateDeck";
 import useHomePile, { UseHomePile } from "../CustomHooks/useHomePile";
 import HomePile from "./HomePile";
+import { isJsxElement } from "typescript";
 
 export type CardType = {
   value: string;
@@ -16,7 +17,7 @@ export type CardType = {
 export type HandleCardsDrop = (cards: CardType[], from: string) => void;
 
 type GameState = {
-  drawPile: UseDrawPile;
+  draw: UseDrawPile;
   stack1: UseStack;
   stack2: UseStack;
   stack3: UseStack;
@@ -41,12 +42,7 @@ const GameTable = () => {
   const deck = generateDeck();
 
   const cardPile: GameState = {
-    drawPile: useDrawPile(
-      "drawPile",
-      isDragging,
-      setHighlightedStack,
-      deck.drawPile
-    ),
+    draw: useDrawPile("drawPile", isDragging, setHighlightedStack, deck.draw),
     stack1: useStack("stack1", isDragging, setHighlightedStack, deck.stack1),
     stack2: useStack("stack2", isDragging, setHighlightedStack, deck.stack2),
     stack3: useStack("stack3", isDragging, setHighlightedStack, deck.stack3),
@@ -93,13 +89,25 @@ const GameTable = () => {
     }
   };
 
+  // touch events don't work with the draggable component. The target element in the touch events
+  // is the card itself rather than the pile being dragged to - different from mouse events.
+  // Therefore this is to emulate the mouseEnter/mouseLeave events in touch
+  const handleTouchDrag: (x: number, y: number) => void = (x, y) => {
+    Object.values(cardPile).forEach((pile) => {
+      if ("onHighlightOnTouch" in pile) {
+        pile.onHighlightOnTouch(x, y);
+      }
+    });
+  };
+
   return (
     <div className="bg-emerald-500 md:h-full md:w-full h-[100%] w-[100%]">
       <div className="flex flex-row md:h-[40%] h-[30%]">
         <DrawPile
           setIsDragging={handleIsDragging}
           handleCardsDrop={handleCardsDrop}
-          hook={cardPile["drawPile"]}
+          hook={cardPile["draw"]}
+          onDragTouch={handleTouchDrag}
         />
         <div className="flex flex-row md:w-[100%] flex-wrap">
           {["clubs", "spades", "hearts", "diamonds"].map((suit) => (
@@ -109,6 +117,7 @@ const GameTable = () => {
               setIsDragging={handleIsDragging}
               handleCardsDrop={handleCardsDrop}
               hook={cardPile[suit as keyof GameState] as UseHomePile}
+              onDragTouch={handleTouchDrag}
             />
           ))}
         </div>
@@ -121,6 +130,7 @@ const GameTable = () => {
             handleCardsDrop={handleCardsDrop}
             hook={cardPile[`stack${stackNum}` as keyof GameState] as UseStack}
             setIsDragging={handleIsDragging}
+            onDragTouch={handleTouchDrag}
           />
         ))}
       </div>

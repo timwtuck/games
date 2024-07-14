@@ -1,7 +1,7 @@
 import { CardType } from "../Components/GameTable";
 
 type Deck = {
-  drawPile: CardType[];
+  draw: CardType[];
   stack1: CardType[];
   stack2: CardType[];
   stack3: CardType[];
@@ -78,7 +78,7 @@ export const generateDeck: () => Deck = () => {
     stack5: cards.splice(0, 5),
     stack6: cards.splice(0, 6),
     stack7: cards.splice(0, 7),
-    drawPile: cards,
+    draw: cards,
   };
 };
 

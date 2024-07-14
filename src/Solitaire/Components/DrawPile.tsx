@@ -1,17 +1,21 @@
-import Draggable, { DraggableEventHandler } from "react-draggable";
-import ReactDOM from "react-dom";
-import { MouseEventHandler, useState } from "react";
+import { MouseEventHandler } from "react";
 import Card, { HandleCardDrop } from "./Card";
-import { CardType, HandleCardsDrop } from "./GameTable";
+import { HandleCardsDrop } from "./GameTable";
 import { UseDrawPile } from "../CustomHooks/useDrawPile";
 
 type Props = {
   setIsDragging: (isDragging: boolean) => void;
   handleCardsDrop: HandleCardsDrop;
   hook: UseDrawPile;
+  onDragTouch: (x: number, y: number) => void;
 };
 
-const DrawPile = ({ setIsDragging, handleCardsDrop, hook }: Props) => {
+const DrawPile = ({
+  setIsDragging,
+  handleCardsDrop,
+  hook,
+  onDragTouch,
+}: Props) => {
   const onClick: MouseEventHandler = () => {
     hook.drawCard();
   };
@@ -33,6 +37,7 @@ const DrawPile = ({ setIsDragging, handleCardsDrop, hook }: Props) => {
             position={{ x: i * 2, y: 1 }}
             pile="drawPile"
             showCard={false}
+            onTouch={onDragTouch}
           />
         ))}
       </div>
@@ -48,6 +53,7 @@ const DrawPile = ({ setIsDragging, handleCardsDrop, hook }: Props) => {
             pile="drawPile"
             showCard
             draggingClassName={"z-30"}
+            onTouch={onDragTouch}
           />
         ))}
       </div>

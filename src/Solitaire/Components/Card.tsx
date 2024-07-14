@@ -1,12 +1,9 @@
 import Draggable, {
   ControlPosition,
-  DraggableCore,
   DraggableEventHandler,
 } from "react-draggable";
-import ReactDOM from "react-dom";
-import { useDrag } from "react-dnd";
-import { CardType, HandleCardsDrop, ItemTypes } from "./GameTable";
-import { MouseEventHandler, useRef, useState } from "react";
+import { CardType } from "./GameTable";
+import { useState } from "react";
 
 export type HandleCardDrop = (cards: CardType, from: string) => void;
 
@@ -22,6 +19,7 @@ type Props = {
   showCard: boolean;
   onDragging?: (card: CardType, x: number, y: number) => void;
   draggingClassName?: string | null;
+  onTouch: (x: number, y: number) => void;
 };
 
 const Card = ({
@@ -36,6 +34,7 @@ const Card = ({
   showCard,
   onDragging = undefined,
   draggingClassName = undefined,
+  onTouch,
 }: Props) => {
   const [disablePointers, setDisablePointers] = useState(false);
   const onStart: DraggableEventHandler = (e, data) => {
@@ -49,6 +48,9 @@ const Card = ({
   };
 
   const onDrag: DraggableEventHandler = (e, data) => {
+    if (e instanceof TouchEvent) {
+      onTouch(e.touches[0].clientX, e.touches[0].clientY);
+    }
     if (onDragging) onDragging(card, data.x, data.y);
   };
 
@@ -79,8 +81,10 @@ const Card = ({
         <div
           className={`md:w-[11%] w-[20%] ${className} ${disableEvents()}`}
           onClick={onClick}
+          draggable
         >
           <img
+            id={`${card.value}_${card.suit}`}
             src={imgPath}
             onMouseDown={(e) => {
               e.preventDefault();
