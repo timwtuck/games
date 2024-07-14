@@ -104,6 +104,7 @@ const GameTable = () => {
     <div className="bg-emerald-500 md:h-full md:w-full h-[100%] w-[100%]">
       <div className="flex flex-row md:h-[40%] h-[30%]">
         <DrawPile
+          name="draw"
           setIsDragging={handleIsDragging}
           handleCardsDrop={handleCardsDrop}
           hook={cardPile["draw"]}

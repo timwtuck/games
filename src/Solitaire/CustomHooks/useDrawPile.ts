@@ -33,6 +33,7 @@ const useDrawPile: (
 
   const removeCards: (card: CardType[]) => void = () => {
     setFaceUpCards((curr) => curr.slice(0, curr.length - 1));
+    // setFaceUpCards((curr) => curr.filter((card) => !cards.includes(card)));
   };
 
   const drawCard: () => void = () => {

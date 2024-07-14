@@ -4,6 +4,7 @@ import { HandleCardsDrop } from "./GameTable";
 import { UseDrawPile } from "../CustomHooks/useDrawPile";
 
 type Props = {
+  name: string;
   setIsDragging: (isDragging: boolean) => void;
   handleCardsDrop: HandleCardsDrop;
   hook: UseDrawPile;
@@ -11,6 +12,7 @@ type Props = {
 };
 
 const DrawPile = ({
+  name,
   setIsDragging,
   handleCardsDrop,
   hook,
@@ -35,7 +37,7 @@ const DrawPile = ({
             canDrag={false}
             className={"absolute "}
             position={{ x: i * 2, y: 1 }}
-            pile="drawPile"
+            pile={name}
             showCard={false}
             onTouch={onDragTouch}
           />
@@ -50,7 +52,7 @@ const DrawPile = ({
             position={{ x: i * 3, y: 0 }}
             setIsDragging={setIsDragging}
             handleCardDrop={handleCardDrop}
-            pile="drawPile"
+            pile={name}
             showCard
             draggingClassName={"z-30"}
             onTouch={onDragTouch}
