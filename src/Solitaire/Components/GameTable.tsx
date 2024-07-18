@@ -37,23 +37,24 @@ export const ItemTypes = {
 
 const GameTable = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [highlightedStack, setHighlightedStack] = useState<string | null>(null);
+  const [highlighted, setHighlighted] = useState<string | null>(null);
   const [completed, setCompleted] = useState<boolean>(false);
+  const undo = useRef<(() => void)[]>([]);
   const deck = generateDeck();
 
   const cardPile: GameState = {
-    draw: useDrawPile("drawPile", isDragging, setHighlightedStack, deck.draw),
-    stack1: useStack("stack1", isDragging, setHighlightedStack, deck.stack1),
-    stack2: useStack("stack2", isDragging, setHighlightedStack, deck.stack2),
-    stack3: useStack("stack3", isDragging, setHighlightedStack, deck.stack3),
-    stack4: useStack("stack4", isDragging, setHighlightedStack, deck.stack4),
-    stack5: useStack("stack5", isDragging, setHighlightedStack, deck.stack5),
-    stack6: useStack("stack6", isDragging, setHighlightedStack, deck.stack6),
-    stack7: useStack("stack7", isDragging, setHighlightedStack, deck.stack7),
-    diamonds: useHomePile("diamonds", isDragging, setHighlightedStack),
-    spades: useHomePile("spades", isDragging, setHighlightedStack),
-    clubs: useHomePile("clubs", isDragging, setHighlightedStack),
-    hearts: useHomePile("hearts", isDragging, setHighlightedStack),
+    draw: useDrawPile("drawPile", isDragging, setHighlighted, deck.draw, undo),
+    stack1: useStack("stack1", isDragging, setHighlighted, deck.stack1, undo),
+    stack2: useStack("stack2", isDragging, setHighlighted, deck.stack2, undo),
+    stack3: useStack("stack3", isDragging, setHighlighted, deck.stack3, undo),
+    stack4: useStack("stack4", isDragging, setHighlighted, deck.stack4, undo),
+    stack5: useStack("stack5", isDragging, setHighlighted, deck.stack5, undo),
+    stack6: useStack("stack6", isDragging, setHighlighted, deck.stack6, undo),
+    stack7: useStack("stack7", isDragging, setHighlighted, deck.stack7, undo),
+    diamonds: useHomePile("diamonds", isDragging, setHighlighted),
+    spades: useHomePile("spades", isDragging, setHighlighted),
+    clubs: useHomePile("clubs", isDragging, setHighlighted),
+    hearts: useHomePile("hearts", isDragging, setHighlighted),
   };
 
   useEffect(() => {
@@ -76,16 +77,21 @@ const GameTable = () => {
   };
 
   const handleCardsDrop: HandleCardsDrop = (cards, from) => {
-    if (!highlightedStack) return;
-    if (highlightedStack == from) return;
+    if (!highlighted) return;
+    if (highlighted == from) return;
 
-    const canDrop = cardPile[highlightedStack as keyof GameState].evaluateDrop(
+    const canDrop = cardPile[highlighted as keyof GameState].evaluateDrop(
       cards[0]
     );
 
     if (canDrop) {
-      cardPile[highlightedStack as keyof GameState].addCards(cards);
+      cardPile[highlighted as keyof GameState].addCards(cards);
       cardPile[from as keyof GameState].removeCards(cards);
+
+      undo.current.push(() => {
+        cardPile[from as keyof GameState].addCards(cards);
+        cardPile[highlighted as keyof GameState].removeCards(cards);
+      });
     }
   };
 
@@ -100,9 +106,20 @@ const GameTable = () => {
     });
   };
 
+  const handleUndo = () => {
+    const toUndo = undo.current.pop();
+    if (toUndo) toUndo();
+  };
+
   return (
-    <div className="bg-emerald-500 md:h-full md:w-full h-[100%] w-[100%]">
+    <div className="bg-emerald-500 md:h-full md:w-[100%] h-[100%] w-[100%]">
       <div className="flex flex-row md:h-[40%] h-[30%]">
+        <button
+          className="p-2 h-36 hover:bg-amber-200 hover:bg-opacity-50 flex"
+          onClick={handleUndo}
+        >
+          <img className="w-24 h-24" src="/images/buttons/undo.svg" />
+        </button>
         <DrawPile
           name="draw"
           setIsDragging={handleIsDragging}
@@ -110,11 +127,11 @@ const GameTable = () => {
           hook={cardPile["draw"]}
           onDragTouch={handleTouchDrag}
         />
-        <div className="flex flex-row md:w-[100%] flex-wrap">
+        <div className="flex flex-row md:w-full flex-wrap">
           {["clubs", "spades", "hearts", "diamonds"].map((suit) => (
             <HomePile
               name={suit}
-              highlightedStack={highlightedStack}
+              highlightedStack={highlighted}
               setIsDragging={handleIsDragging}
               handleCardsDrop={handleCardsDrop}
               hook={cardPile[suit as keyof GameState] as UseHomePile}
@@ -127,7 +144,7 @@ const GameTable = () => {
         {[1, 2, 3, 4, 5, 6, 7].map((stackNum) => (
           <Stack
             name={`stack${stackNum}`}
-            highlightedStack={highlightedStack}
+            highlightedStack={highlighted}
             handleCardsDrop={handleCardsDrop}
             hook={cardPile[`stack${stackNum}` as keyof GameState] as UseStack}
             setIsDragging={handleIsDragging}

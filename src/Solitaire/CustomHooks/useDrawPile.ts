@@ -13,14 +13,15 @@ const useDrawPile: (
   name: string,
   isDragging: boolean,
   setHighlightedStack: React.Dispatch<React.SetStateAction<string | null>>,
-  initCards: CardType[]
-) => UseDrawPile = (name, isDragging, setHighlightedStack, initCards) => {
+  initCards: CardType[],
+  undo: React.RefObject<(() => void)[]>
+) => UseDrawPile = (name, isDragging, setHighlightedStack, initCards, undo) => {
   const [cards, setCards] = useState<CardType[]>([...initCards]);
 
   const [faceUpCards, setFaceUpCards] = useState<CardType[]>([]);
   const [faceDownCards, setFaceDownCards] = useState<CardType[]>([...cards]);
 
-  const { onMouseEnter, onMouseLeave, addCards } = useCardPile(
+  const { onMouseEnter, onMouseLeave } = useCardPile(
     name,
     isDragging,
     setHighlightedStack,
@@ -31,18 +32,32 @@ const useDrawPile: (
     return false;
   };
 
+  const addCards: (card: CardType[]) => void = (card) => {
+    setFaceUpCards((curr) => [...curr, ...card]);
+  };
+
   const removeCards: (card: CardType[]) => void = () => {
     setFaceUpCards((curr) => curr.slice(0, curr.length - 1));
-    // setFaceUpCards((curr) => curr.filter((card) => !cards.includes(card)));
   };
 
   const drawCard: () => void = () => {
     if (faceDownCards.length === 0) {
       setFaceDownCards([...faceUpCards]);
       setFaceUpCards([]);
+
+      undo.current!.push(() => {
+        setFaceDownCards([]);
+        setFaceUpCards([...faceUpCards]);
+      });
     } else {
-      setFaceUpCards([...faceUpCards, faceDownCards[0]]);
+      const cardToMove = faceDownCards[0];
+      setFaceUpCards([...faceUpCards, cardToMove]);
       setFaceDownCards(faceDownCards.slice(1));
+
+      undo.current!.push(() => {
+        setFaceDownCards((curr) => [cardToMove, ...curr]);
+        setFaceUpCards((curr) => curr.slice(0, curr.length - 1));
+      });
     }
   };
 

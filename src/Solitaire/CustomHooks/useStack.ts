@@ -13,8 +13,9 @@ const useStack: (
   name: string,
   isDragging: boolean,
   setHighlightedStack: React.Dispatch<React.SetStateAction<string | null>>,
-  initCards: CardType[]
-) => UseStack = (name, isDragging, setHighlightedStack, initCards) => {
+  initCards: CardType[],
+  undo: React.RefObject<(() => void)[]>
+) => UseStack = (name, isDragging, setHighlightedStack, initCards, undo) => {
   const displayCards = initCards.map((card, i) => {
     const show = i == initCards.length - 1;
     return { ...card, show };
@@ -68,12 +69,20 @@ const useStack: (
 
   const showCard: (card: CardType) => void = (card) => {
     if (cards.indexOf(card) !== cards.length - 1) return;
+    const cardIndex = cards.indexOf(card);
 
     setCards((curr) => {
-      const cardIndex = curr.indexOf(card);
       const update = [...curr];
       update[cardIndex].show = true;
       return update;
+    });
+
+    undo.current!.push(() => {
+      setCards((curr) => {
+        const update = [...curr];
+        update[cardIndex].show = false;
+        return update;
+      });
     });
   };
 
