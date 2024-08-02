@@ -9,6 +9,7 @@ import HomePile from "./HomePile";
 import { isJsxElement } from "typescript";
 import { useStopwatch, useTimer } from "react-timer-hook";
 import Timer from "./Timer";
+import DetailsModal from "./DetailsModal";
 
 export type CardType = {
   value: string;
@@ -41,6 +42,7 @@ const GameTable = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [highlighted, setHighlighted] = useState<string | null>(null);
   const [completed, setCompleted] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState(false);
   const undo = useRef<(() => void)[]>([]);
   const deck = generateDeck();
 
@@ -71,7 +73,10 @@ const GameTable = () => {
       cardPile.spades.cards.length === 13;
 
     setCompleted(finished);
-    if (finished) timer.pause();
+    if (finished) {
+      timer.pause();
+      setShowModal(true);
+    }
   }, [
     cardPile.clubs.cards,
     cardPile.diamonds.cards,
@@ -119,57 +124,63 @@ const GameTable = () => {
   };
 
   return (
-    <div className="bg-emerald-500 md:h-full md:w-[100%] h-[100%] w-[100%]">
-      <div className="flex flex-row md:h-[40%] h-[30%]">
-        <button
-          className="p-2 h-36 hover:bg-amber-200 hover:bg-opacity-50 flex"
-          onClick={handleUndo}
-        >
-          <img className="w-24 h-24" src="/images/buttons/undo.svg" />
-        </button>
-        <DrawPile
-          name="draw"
-          setIsDragging={handleIsDragging}
-          handleCardsDrop={handleCardsDrop}
-          hook={cardPile["draw"]}
-          onDragTouch={handleTouchDrag}
-        />
-        <Timer
-          seconds={timer.seconds}
-          minutes={timer.minutes}
-          hours={timer.hours}
-        />
-        <div className="flex flex-row md:w-full flex-wrap">
-          {["clubs", "spades", "hearts", "diamonds"].map((suit) => (
-            <HomePile
-              name={suit}
+    <>
+      <div className="bg-emerald-500 md:h-full md:w-[100%] h-[100%] w-[100%]">
+        <div className="flex flex-row md:h-[40%] h-[30%]">
+          <button
+            className="p-2 h-36 hover:bg-amber-200 hover:bg-opacity-50 flex"
+            onClick={handleUndo}
+          >
+            <img className="w-24 h-24" src="/images/buttons/undo.svg" />
+          </button>
+          <DrawPile
+            name="draw"
+            setIsDragging={handleIsDragging}
+            handleCardsDrop={handleCardsDrop}
+            hook={cardPile["draw"]}
+            onDragTouch={handleTouchDrag}
+          />
+          <Timer
+            seconds={timer.seconds}
+            minutes={timer.minutes}
+            hours={timer.hours}
+          />
+          <div className="flex flex-row md:w-full flex-wrap">
+            {["clubs", "spades", "hearts", "diamonds"].map((suit) => (
+              <HomePile
+                name={suit}
+                highlightedStack={highlighted}
+                setIsDragging={handleIsDragging}
+                handleCardsDrop={handleCardsDrop}
+                hook={cardPile[suit as keyof GameState] as UseHomePile}
+                onDragTouch={handleTouchDrag}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-row md:h-2/5 flex-wrap">
+          {[1, 2, 3, 4, 5, 6, 7].map((stackNum) => (
+            <Stack
+              name={`stack${stackNum}`}
               highlightedStack={highlighted}
-              setIsDragging={handleIsDragging}
               handleCardsDrop={handleCardsDrop}
-              hook={cardPile[suit as keyof GameState] as UseHomePile}
+              hook={cardPile[`stack${stackNum}` as keyof GameState] as UseStack}
+              setIsDragging={handleIsDragging}
               onDragTouch={handleTouchDrag}
             />
           ))}
         </div>
+        {completed && (
+          <p className="absolute text-2xl inset-y-1/2 w-full">
+            You are the winner!
+          </p>
+        )}
       </div>
-      <div className="flex flex-row md:h-2/5 flex-wrap">
-        {[1, 2, 3, 4, 5, 6, 7].map((stackNum) => (
-          <Stack
-            name={`stack${stackNum}`}
-            highlightedStack={highlighted}
-            handleCardsDrop={handleCardsDrop}
-            hook={cardPile[`stack${stackNum}` as keyof GameState] as UseStack}
-            setIsDragging={handleIsDragging}
-            onDragTouch={handleTouchDrag}
-          />
-        ))}
-      </div>
-      {completed && (
-        <p className="absolute text-2xl inset-y-1/2 w-full">
-          You are the winner!
-        </p>
-      )}
-    </div>
+      <DetailsModal
+        showModal={showModal}
+        handleClose={() => setShowModal(false)}
+      />
+    </>
   );
 };
 

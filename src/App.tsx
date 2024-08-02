@@ -1,14 +1,18 @@
-import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import GameTable from "./Solitaire/Components/GameTable";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
     <div className="App">
-      <body className="h-screen w-screen">
-        <GameTable />
-      </body>
+      <Router>
+        <body className="h-screen w-screen">
+          <Routes>
+            <Route path="/" element={<GameTable />} />
+            <Route path="/solitaire" element={<GameTable />} />
+          </Routes>
+        </body>
+      </Router>
     </div>
   );
 }
