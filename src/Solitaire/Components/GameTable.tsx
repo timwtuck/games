@@ -7,6 +7,8 @@ import { generateDeck } from "../Utils/GenerateDeck";
 import useHomePile, { UseHomePile } from "../CustomHooks/useHomePile";
 import HomePile from "./HomePile";
 import { isJsxElement } from "typescript";
+import { useStopwatch, useTimer } from "react-timer-hook";
+import Timer from "./Timer";
 
 export type CardType = {
   value: string;
@@ -57,6 +59,10 @@ const GameTable = () => {
     hearts: useHomePile("hearts", isDragging, setHighlighted),
   };
 
+  const expiryTimestamp = new Date();
+  expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 86399); // 10 minutes timer
+  const timer = useStopwatch({ autoStart: true });
+
   useEffect(() => {
     const finished =
       cardPile.diamonds.cards.length === 13 &&
@@ -65,6 +71,7 @@ const GameTable = () => {
       cardPile.spades.cards.length === 13;
 
     setCompleted(finished);
+    if (finished) timer.pause();
   }, [
     cardPile.clubs.cards,
     cardPile.diamonds.cards,
@@ -126,6 +133,11 @@ const GameTable = () => {
           handleCardsDrop={handleCardsDrop}
           hook={cardPile["draw"]}
           onDragTouch={handleTouchDrag}
+        />
+        <Timer
+          seconds={timer.seconds}
+          minutes={timer.minutes}
+          hours={timer.hours}
         />
         <div className="flex flex-row md:w-full flex-wrap">
           {["clubs", "spades", "hearts", "diamonds"].map((suit) => (
