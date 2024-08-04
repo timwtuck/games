@@ -7,6 +7,7 @@ type Props = {
   name: string;
   setIsDragging: (isDragging: boolean) => void;
   handleCardsDrop: HandleCardsDrop;
+  handleAutoCardsDrop: HandleCardsDrop;
   hook: UseDrawPile;
   onDragTouch: (x: number, y: number) => void;
 };
@@ -15,6 +16,7 @@ const DrawPile = ({
   name,
   setIsDragging,
   handleCardsDrop,
+  handleAutoCardsDrop,
   hook,
   onDragTouch,
 }: Props) => {
@@ -24,6 +26,10 @@ const DrawPile = ({
 
   const handleCardDrop: HandleCardDrop = (card, from) => {
     handleCardsDrop([card], from);
+  };
+
+  const handleAutoCardDrop: HandleCardDrop = (card, from) => {
+    handleAutoCardsDrop([card], from);
   };
 
   const faceUpToReveal = hook.faceUpCards.slice(-3);
@@ -52,6 +58,7 @@ const DrawPile = ({
             position={{ x: i * 3, y: 0 }}
             setIsDragging={setIsDragging}
             handleCardDrop={handleCardDrop}
+            handleAutoCardDrop={handleAutoCardDrop}
             pile={name}
             showCard
             draggingClassName={"z-30"}

@@ -14,6 +14,7 @@ type Props = {
   position: ControlPosition;
   setIsDragging?: (isDragging: boolean) => void;
   handleCardDrop?: HandleCardDrop;
+  handleAutoCardDrop?: HandleCardDrop;
   pile: string;
   revealCard?: (card: CardType) => void;
   showCard: boolean;
@@ -28,7 +29,8 @@ const Card = ({
   canDrag,
   position,
   setIsDragging,
-  handleCardDrop,
+  handleCardDrop = undefined,
+  handleAutoCardDrop = undefined,
   pile,
   revealCard = undefined,
   showCard,
@@ -39,7 +41,6 @@ const Card = ({
   const [disablePointers, setDisablePointers] = useState(false);
   const onStart: DraggableEventHandler = (e, data) => {
     if (setIsDragging) setIsDragging(true);
-    setDisablePointers(true);
   };
   const onStop: DraggableEventHandler = (e, data) => {
     if (setIsDragging) setIsDragging(false);
@@ -48,6 +49,7 @@ const Card = ({
   };
 
   const onDrag: DraggableEventHandler = (e, data) => {
+    setDisablePointers(true);
     if (e instanceof TouchEvent) {
       onTouch(e.touches[0].clientX, e.touches[0].clientY);
     }
@@ -62,12 +64,16 @@ const Card = ({
     if (!card.show && revealCard) revealCard(card);
   };
 
+  const onDoubleClick: () => void = () => {
+    if (handleAutoCardDrop) handleAutoCardDrop(card, pile);
+  };
+
   const imgPath = showCard
     ? `/images/png/${card.value}_of_${card.suit}.png`
     : "/images/blue_back.svg";
 
   return (
-    <>
+    <div onDoubleClick={onDoubleClick}>
       <Draggable
         disabled={!canDrag || !card.show}
         onStart={onStart}
@@ -81,7 +87,6 @@ const Card = ({
         <div
           className={`md:w-[11%] w-[20%] ${className} ${disableEvents()}`}
           onClick={onClick}
-          draggable
         >
           <img
             id={`${card.value}_${card.suit}`}
@@ -92,7 +97,7 @@ const Card = ({
           />
         </div>
       </Draggable>
-    </>
+    </div>
   );
 };
 

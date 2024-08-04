@@ -8,6 +8,7 @@ type Props = {
   highlightedStack: string | null;
   setIsDragging: (isDragging: boolean) => void;
   handleCardsDrop: HandleCardsDrop;
+  handleAutoCardsDrop: HandleCardsDrop;
   hook: UseHomePile;
   onDragTouch: (x: number, y: number) => void;
 };
@@ -17,12 +18,17 @@ const HomePile = ({
   highlightedStack,
   setIsDragging,
   handleCardsDrop,
+  handleAutoCardsDrop,
   hook,
   onDragTouch,
 }: Props) => {
   const { cards } = hook;
   const handleCardDrop: HandleCardDrop = (card, from) => {
     handleCardsDrop([card], from);
+  };
+
+  const handleAutoCardDrop: HandleCardDrop = (card, from) => {
+    handleAutoCardsDrop([card], from);
   };
 
   const getBorderColour: () => string = () => {
@@ -54,6 +60,7 @@ const HomePile = ({
           position={{ x: 0, y: i * 3 }}
           setIsDragging={setIsDragging}
           handleCardDrop={handleCardDrop}
+          handleAutoCardDrop={handleAutoCardDrop}
           pile={name}
           showCard
           onTouch={onDragTouch}

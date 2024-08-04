@@ -11,6 +11,7 @@ import { useStopwatch, useTimer } from "react-timer-hook";
 import Timer from "./Timer";
 import DetailsModal from "./DetailsModal";
 import { buildTime } from "../Utils/utils";
+import { HandleCardDrop } from "./Card";
 
 export type CardType = {
   value: string;
@@ -18,6 +19,11 @@ export type CardType = {
   show: boolean;
 };
 
+export type MoveCards = (
+  cards: CardType[],
+  from: string,
+  to: string
+) => boolean;
 export type HandleCardsDrop = (cards: CardType[], from: string) => void;
 
 type GameState = {
@@ -89,22 +95,34 @@ const GameTable = () => {
     setIsDragging(dragging);
   };
 
-  const handleCardsDrop: HandleCardsDrop = (cards, from) => {
-    if (!highlighted) return;
-    if (highlighted == from) return;
+  const MoveCards: MoveCards = (cards, from, to) => {
+    if (to == from) return false;
 
-    const canDrop = cardPile[highlighted as keyof GameState].evaluateDrop(
-      cards[0]
-    );
+    const canDrop = cardPile[to as keyof GameState].evaluateDrop(cards[0]);
 
     if (canDrop) {
-      cardPile[highlighted as keyof GameState].addCards(cards);
+      cardPile[to as keyof GameState].addCards(cards);
       cardPile[from as keyof GameState].removeCards(cards);
 
       undo.current.push(() => {
         cardPile[from as keyof GameState].addCards(cards);
-        cardPile[highlighted as keyof GameState].removeCards(cards);
+        cardPile[to as keyof GameState].removeCards(cards);
       });
+    }
+
+    return canDrop;
+  };
+
+  const handleManualMove: HandleCardsDrop = (cards, from) => {
+    if (!highlighted) return;
+    MoveCards(cards, from, highlighted);
+  };
+
+  const handleAutoMove: HandleCardsDrop = (cards, from) => {
+    if (cards.length == 1 && MoveCards(cards, from, cards[0].suit)) return;
+
+    for (let i = 1; i <= 7; i++) {
+      if (MoveCards(cards, from, `stack${i}`)) return;
     }
   };
 
@@ -137,7 +155,8 @@ const GameTable = () => {
           <DrawPile
             name="draw"
             setIsDragging={handleIsDragging}
-            handleCardsDrop={handleCardsDrop}
+            handleCardsDrop={handleManualMove}
+            handleAutoCardsDrop={handleAutoMove}
             hook={cardPile["draw"]}
             onDragTouch={handleTouchDrag}
           />
@@ -152,7 +171,8 @@ const GameTable = () => {
                 name={suit}
                 highlightedStack={highlighted}
                 setIsDragging={handleIsDragging}
-                handleCardsDrop={handleCardsDrop}
+                handleCardsDrop={handleManualMove}
+                handleAutoCardsDrop={handleAutoMove}
                 hook={cardPile[suit as keyof GameState] as UseHomePile}
                 onDragTouch={handleTouchDrag}
               />
@@ -164,7 +184,8 @@ const GameTable = () => {
             <Stack
               name={`stack${stackNum}`}
               highlightedStack={highlighted}
-              handleCardsDrop={handleCardsDrop}
+              handleCardsDrop={handleManualMove}
+              handleAutoCardsDrop={handleAutoMove}
               hook={cardPile[`stack${stackNum}` as keyof GameState] as UseStack}
               setIsDragging={handleIsDragging}
               onDragTouch={handleTouchDrag}
