@@ -1,3 +1,5 @@
+import { buildTime } from "../Utils/utils";
+
 type Props = {
   seconds: number;
   minutes: number;
@@ -5,13 +7,9 @@ type Props = {
 };
 
 function Timer({ seconds, minutes, hours }: Props) {
-  const format: (time: number) => string = (time) => {
-    return `${time < 10 ? "0" : ""}${time}`;
-  };
   return (
     <div className="text-5xl">
-      <span>{format(hours)}</span>:<span>{format(minutes)}</span>:
-      <span>{format(seconds)}</span>
+      <span>{buildTime(hours, minutes, seconds)}</span>
     </div>
   );
 }

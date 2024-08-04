@@ -15,4 +15,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export default initializeApp(firebaseConfig);
+
+// https://www.youtube.com/watch?v=jiQGGjVAnEw&list=PLWUFLphNVZjtnnD5YH5N-Fko-_RaSWIKQ&index=4

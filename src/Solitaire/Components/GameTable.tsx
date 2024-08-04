@@ -10,6 +10,7 @@ import { isJsxElement } from "typescript";
 import { useStopwatch, useTimer } from "react-timer-hook";
 import Timer from "./Timer";
 import DetailsModal from "./DetailsModal";
+import { buildTime } from "../Utils/utils";
 
 export type CardType = {
   value: string;
@@ -179,6 +180,7 @@ const GameTable = () => {
       <DetailsModal
         showModal={showModal}
         handleClose={() => setShowModal(false)}
+        time={buildTime(timer.hours, timer.minutes, timer.seconds)}
       />
     </>
   );
