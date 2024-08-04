@@ -1,6 +1,7 @@
 import "./App.css";
 import GameTable from "./Solitaire/Components/GameTable";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import GenerateGameTable from "./Solitaire/Components/GenerateGameTable";
 
 function App() {
   return (
@@ -8,8 +9,9 @@ function App() {
       <Router>
         <body className="h-screen w-screen">
           <Routes>
-            <Route path="/" element={<GameTable />} />
-            <Route path="/solitaire" element={<GameTable />} />
+            <Route path="/" element={<GenerateGameTable />} />
+            <Route path="/solitaire" element={<GenerateGameTable />} />
+            <Route path="/solitaire/:seed" element={<GameTable />} />
           </Routes>
         </body>
       </Router>

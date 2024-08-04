@@ -11,7 +11,7 @@ type Deck = {
   stack7: CardType[];
 };
 
-export const generateDeck: () => Deck = () => {
+export const generateDeck: (seed: string) => Deck = (seed) => {
   const allCards: { suit: string; value: string }[] = [
     { suit: "hearts", value: "2" },
     { suit: "hearts", value: "3" },
@@ -69,7 +69,9 @@ export const generateDeck: () => Deck = () => {
 
   const allCardsShow = allCards.map((card) => ({ ...card, show: true }));
 
-  const cards = shuffle(allCardsShow);
+  //  const cards = shuffle(allCardsShow);
+  const cards = seededShuffle(allCardsShow, seed);
+
   return {
     stack1: cards.splice(0, 1),
     stack2: cards.splice(0, 2),
@@ -99,4 +101,52 @@ const shuffle: (cards: CardType[]) => CardType[] = (cards) => {
   }
 
   return cards;
+};
+
+const seededShuffle: (cards: CardType[], seed: string) => CardType[] = (
+  cards,
+  seed
+) => {
+  if (seed.length !== 22) throw new Error("Invalid Seed");
+  const numbers = seed.match(/.{1,2}/g)!.map((n) => Number.parseInt(n, 16));
+  const seedCombinations = getCombinations(numbers, 0, 1);
+
+  let currentIndex = cards.length;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+    // Pick a remaining element...
+    let randomIndex = Math.floor(seedCombinations[currentIndex] % currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [cards[currentIndex], cards[randomIndex]] = [
+      cards[randomIndex],
+      cards[currentIndex],
+    ];
+  }
+
+  return cards;
+};
+
+const getCombinations: (seeds: number[], i: number, j: number) => number[] = (
+  seeds,
+  i,
+  j
+) => {
+  if (i >= 11) return [];
+  if (j >= 11) return getCombinations(seeds, i + 1, i + 2);
+
+  return [seeds[i] * seeds[j], ...getCombinations(seeds, i, j + 1)];
+};
+
+export const generateSeed: () => string = () => {
+  let seed = "";
+  for (let i = 0; i < 11; i++) {
+    let num = Math.floor(Math.random() * 255).toString(16);
+    if (num.length === 1) num = `0${num}`;
+    seed += num;
+  }
+
+  return seed;
 };

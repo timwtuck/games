@@ -3,7 +3,7 @@ import Stack from "./Stack";
 import { RefObject, useEffect, useRef, useState } from "react";
 import useStack, { UseStack } from "../CustomHooks/useStack";
 import useDrawPile, { UseDrawPile } from "../CustomHooks/useDrawPile";
-import { generateDeck } from "../Utils/GenerateDeck";
+import { generateDeck, generateSeed } from "../Utils/generateDeck";
 import useHomePile, { UseHomePile } from "../CustomHooks/useHomePile";
 import HomePile from "./HomePile";
 import { isJsxElement } from "typescript";
@@ -12,6 +12,7 @@ import Timer from "./Timer";
 import DetailsModal from "./DetailsModal";
 import { buildTime } from "../Utils/utils";
 import { HandleCardDrop } from "./Card";
+import { useNavigate, useParams } from "react-router-dom";
 
 export type CardType = {
   value: string;
@@ -46,12 +47,14 @@ export const ItemTypes = {
 };
 
 const GameTable = () => {
+  let { seed } = useParams();
+
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [highlighted, setHighlighted] = useState<string | null>(null);
   const [completed, setCompleted] = useState<boolean>(false);
   const [showModal, setShowModal] = useState(false);
   const undo = useRef<(() => void)[]>([]);
-  const deck = generateDeck();
+  const deck = generateDeck(seed!);
 
   const cardPile: GameState = {
     draw: useDrawPile("drawPile", isDragging, setHighlighted, deck.draw, undo),
