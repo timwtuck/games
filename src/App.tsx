@@ -1,6 +1,6 @@
 import "./App.css";
 import GameTable from "./Solitaire/Components/GameTable";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import GenerateGameTable from "./Solitaire/Components/GenerateGameTable";
 
 function App() {

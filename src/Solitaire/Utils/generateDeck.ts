@@ -107,8 +107,9 @@ const seededShuffle: (cards: CardType[], seed: string) => CardType[] = (
   cards,
   seed
 ) => {
-  if (seed.length !== 22) throw new Error("Invalid Seed");
-  const numbers = seed.match(/.{1,2}/g)!.map((n) => Number.parseInt(n, 16));
+  if (seed.length !== 5) throw new Error("Invalid Seed");
+  const numbers = decodeSeed(seed);
+  //const numbers = seed.match(/.{1,2}/g)!.map((n) => Number.parseInt(n, 16));
   const seedCombinations = getCombinations(numbers, 0, 1);
 
   let currentIndex = cards.length;
@@ -129,22 +130,29 @@ const seededShuffle: (cards: CardType[], seed: string) => CardType[] = (
   return cards;
 };
 
+const decodeSeed: (seed: string) => number[] = (seed) => {
+  let nums = seed.split("").map((n) => Number.parseInt(n, 16));
+  nums = getCombinations(nums, 0, 1);
+  console.log(nums.length);
+  return [...nums, 50];
+};
+
 const getCombinations: (seeds: number[], i: number, j: number) => number[] = (
   seeds,
   i,
   j
 ) => {
-  if (i >= 11) return [];
-  if (j >= 11) return getCombinations(seeds, i + 1, i + 2);
+  if (i >= seeds.length) return [];
+  if (j >= seeds.length) return getCombinations(seeds, i + 1, i + 2);
 
   return [seeds[i] * seeds[j], ...getCombinations(seeds, i, j + 1)];
 };
 
 export const generateSeed: () => string = () => {
   let seed = "";
-  for (let i = 0; i < 11; i++) {
-    let num = Math.floor(Math.random() * 255).toString(16);
-    if (num.length === 1) num = `0${num}`;
+  for (let i = 0; i < 5; i++) {
+    let num = Math.floor(Math.random() * 16).toString(16);
+    // if (num.length === 1) num = `0${num}`;
     seed += num;
   }
 

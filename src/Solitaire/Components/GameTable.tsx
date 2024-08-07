@@ -72,7 +72,7 @@ const GameTable = () => {
   };
 
   const expiryTimestamp = new Date();
-  expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 86399); // 10 minutes timer
+  expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 86399);
   const timer = useStopwatch({ autoStart: true });
 
   useEffect(() => {
