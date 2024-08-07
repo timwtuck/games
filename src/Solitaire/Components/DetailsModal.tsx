@@ -3,6 +3,7 @@ import app from "../../firebase/firebase";
 import { getDatabase, ref, set, push } from "firebase/database";
 import InputField from "./FormComponents/InputField";
 import Button from "./FormComponents/Button";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   showModal: boolean;
@@ -14,6 +15,7 @@ const DetailsModal = ({ showModal, handleClose, time }: Props) => {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  let navigate = useNavigate();
 
   const saveData = async () => {
     const db = getDatabase(app);
@@ -32,6 +34,7 @@ const DetailsModal = ({ showModal, handleClose, time }: Props) => {
   const handleSubmit = async () => {
     await saveData();
     handleClose();
+    navigate("/leaderboard");
   };
   return (
     <>
