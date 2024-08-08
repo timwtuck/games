@@ -85,7 +85,7 @@ const Card = ({
         bounds="body"
       >
         <div
-          className={`md:w-[11%] w-[20%] ${className} ${disableEvents()}`}
+          className={`md:w-[11%] w-[14%] ${className} ${disableEvents()}`}
           onClick={onClick}
         >
           <img

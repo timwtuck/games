@@ -162,7 +162,7 @@ const GameTable = () => {
               hours={timer.hours}
             />
           </div>
-          <div className="flex flex-row">
+          <div className="flex flex-row row-span-4">
             <DrawPile
               name="draw"
               setIsDragging={handleIsDragging}
@@ -173,8 +173,8 @@ const GameTable = () => {
             />
           </div>
         </div>
-        <div className="col-span-2" />
-        <div className="col-span-5 flex flex-row justify-between">
+        <div className="lg:col-span-2 col-span-1" />
+        <div className="lg:col-span-5 lg:pt-0 col-span-6 pt-20 flex flex-row justify-between ">
           {["clubs", "spades", "hearts", "diamonds"].map((suit) => (
             <HomePile
               name={suit}

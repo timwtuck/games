@@ -37,13 +37,13 @@ const DrawPile = ({
   return (
     // <div className="flex md:flex-row flex-col w-full">
     <>
-      <div className="p-5 w-1/2" onClick={onClick}>
+      <div className="p-5 w-1/2 h-full" onClick={onClick}>
         {hook.faceDownCards.map((card, i) => (
           <Card
             card={card}
             canDrag={false}
             className={"absolute "}
-            position={{ x: i * 2, y: 1 }}
+            position={{ x: 1, y: 1 }}
             pile={name}
             showCard={false}
             onTouch={onDragTouch}

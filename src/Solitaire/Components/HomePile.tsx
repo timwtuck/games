@@ -40,13 +40,13 @@ const HomePile = ({
   return (
     <div
       ref={hook.ref}
-      className={"p-1 pt-5 md:w-[24%] w-28 " + getBorderColour()}
+      className={"p-1 pt-5 md:w-[24%] w-24 " + getBorderColour()}
       onMouseEnter={hook.onMouseEnter}
       onMouseLeave={hook.onMouseLeave}
       id={name}
     >
       <img
-        className="absolute md:w-[9%] w-[20%]"
+        className="absolute lg:ml-3 md:w-[9%] w-[14%] "
         src={getBackground()}
         onMouseDown={(e) => {
           e.preventDefault();
