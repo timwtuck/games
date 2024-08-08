@@ -35,8 +35,9 @@ const DrawPile = ({
   const faceUpToReveal = hook.faceUpCards.slice(-3);
 
   return (
-    <div className="flex md:flex-row flex-col w-full">
-      <div className="p-5 md:w-[33%]" onClick={onClick}>
+    // <div className="flex md:flex-row flex-col w-full">
+    <>
+      <div className="p-5 w-1/2" onClick={onClick}>
         {hook.faceDownCards.map((card, i) => (
           <Card
             card={card}
@@ -49,7 +50,7 @@ const DrawPile = ({
           />
         ))}
       </div>
-      <div className="p-5 md:mt-0 mt-20">
+      <div className="p-5 w-1/2">
         {faceUpToReveal.map((card, i) => (
           <Card
             card={card}
@@ -66,7 +67,8 @@ const DrawPile = ({
           />
         ))}
       </div>
-    </div>
+    </>
+    // </div>
   );
 };
 

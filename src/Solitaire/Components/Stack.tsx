@@ -71,7 +71,7 @@ const Stack = ({
   return (
     <div
       ref={hook.ref}
-      className={"p-5 md:h-full md:w-[14.2%] w-[22%] h-56 " + getBorderColour()}
+      className={"p-5 w-full " + getBorderColour()}
       onMouseEnter={hook.onMouseEnter}
       onMouseLeave={hook.onMouseLeave}
       id={name}

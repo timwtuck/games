@@ -147,42 +147,47 @@ const GameTable = () => {
 
   return (
     <>
-      <div className="bg-emerald-500 md:h-full md:w-[100%] h-[100%] w-[100%]">
-        <div className="flex flex-row md:h-[40%] h-[30%]">
-          <button
-            className="p-2 h-36 hover:bg-amber-200 hover:bg-opacity-50 flex"
-            onClick={handleUndo}
-          >
-            <img className="w-24 h-24" src="/images/buttons/undo.svg" />
-          </button>
-          <DrawPile
-            name="draw"
-            setIsDragging={handleIsDragging}
-            handleCardsDrop={handleManualMove}
-            handleAutoCardsDrop={handleAutoMove}
-            hook={cardPile["draw"]}
-            onDragTouch={handleTouchDrag}
-          />
-          <Timer
-            seconds={timer.seconds}
-            minutes={timer.minutes}
-            hours={timer.hours}
-          />
-          <div className="flex flex-row md:w-full flex-wrap">
-            {["clubs", "spades", "hearts", "diamonds"].map((suit) => (
-              <HomePile
-                name={suit}
-                highlightedStack={highlighted}
-                setIsDragging={handleIsDragging}
-                handleCardsDrop={handleManualMove}
-                handleAutoCardsDrop={handleAutoMove}
-                hook={cardPile[suit as keyof GameState] as UseHomePile}
-                onDragTouch={handleTouchDrag}
-              />
-            ))}
+      <div className="bg-emerald-500 grid grid-cols-10 grid-rows-2 h-full">
+        <div className="col-span-3 grid grid-cols-1 grid-rows-5">
+          <div className="flex flex-row justify-start row-span-1">
+            <button
+              className="p-2 ml-5 mr-10 hover:bg-amber-200 hover:bg-opacity-50 flex"
+              onClick={handleUndo}
+            >
+              <img className="h-full" src="/images/buttons/undo.svg" />
+            </button>
+            <Timer
+              seconds={timer.seconds}
+              minutes={timer.minutes}
+              hours={timer.hours}
+            />
+          </div>
+          <div className="flex flex-row">
+            <DrawPile
+              name="draw"
+              setIsDragging={handleIsDragging}
+              handleCardsDrop={handleManualMove}
+              handleAutoCardsDrop={handleAutoMove}
+              hook={cardPile["draw"]}
+              onDragTouch={handleTouchDrag}
+            />
           </div>
         </div>
-        <div className="flex flex-row md:h-2/5 flex-wrap">
+        <div className="col-span-2" />
+        <div className="col-span-5 flex flex-row justify-between">
+          {["clubs", "spades", "hearts", "diamonds"].map((suit) => (
+            <HomePile
+              name={suit}
+              highlightedStack={highlighted}
+              setIsDragging={handleIsDragging}
+              handleCardsDrop={handleManualMove}
+              handleAutoCardsDrop={handleAutoMove}
+              hook={cardPile[suit as keyof GameState] as UseHomePile}
+              onDragTouch={handleTouchDrag}
+            />
+          ))}
+        </div>
+        <div className="col-span-10 flex flex-row justify-between">
           {[1, 2, 3, 4, 5, 6, 7].map((stackNum) => (
             <Stack
               name={`stack${stackNum}`}
