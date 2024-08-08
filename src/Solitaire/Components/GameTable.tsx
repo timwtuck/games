@@ -3,7 +3,7 @@ import Stack from "./Stack";
 import { RefObject, useEffect, useRef, useState } from "react";
 import useStack, { UseStack } from "../CustomHooks/useStack";
 import useDrawPile, { UseDrawPile } from "../CustomHooks/useDrawPile";
-import { generateDeck, generateSeed } from "../Utils/generateDeck";
+import { generateDeck } from "../Utils/generateDeck";
 import useHomePile, { UseHomePile } from "../CustomHooks/useHomePile";
 import HomePile from "./HomePile";
 import { isJsxElement } from "typescript";
