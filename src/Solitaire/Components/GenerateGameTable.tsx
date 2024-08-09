@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { generateSeed } from "../Utils/generateDeck";
+import { generateSeed } from "../Utils/utils";
 
 function GenerateGameTable() {
   let navigate = useNavigate();
